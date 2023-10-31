@@ -83,7 +83,7 @@ Requires=controller.service
 [Service]
 WorkingDirectory=/home/ailab/fastchat
 Environment="modelName=lmsys/vicuna-33b-v1.3"
-ExecStart=/bin/bash -c 'cd /home/ailab/fastchat && source /home/ailab/python3-venv/bin/activate && python3 -m fastchat.serve.model_worker --model-path '"\${modelName}"' $(lspci | grep -iEw "VGA|NVIDIA" >/dev/null 2>&1 ||echo -n "--device cpu" ) > /tmp/model_worker.log 2>&1'
+ExecStart=/bin/bash -c 'cd /home/ailab/fastchat && source /home/ailab/python3-venv/bin/activate && python3 -m fastchat.serve.model_worker --model-names "gpt-3.5-turbo,text-davinci-003,text-embedding-ada-002" --model-path '"\${modelName}"' $(lspci | grep -iEw "VGA|NVIDIA" >/dev/null 2>&1 ||echo -n "--device cpu" ) > /tmp/model_worker.log 2>&1'
 TimeoutStartSec=360
 ExecStartPost=/bin/bash -c '/home/ailab/fastchat/wait-for-message.sh /tmp/model_worker.log "Uvicorn running"'
 User=ailab
