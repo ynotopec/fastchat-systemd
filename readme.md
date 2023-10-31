@@ -104,11 +104,26 @@ EnvironmentFile=/home/ailab/fastchat/env-fastchat.sh
 WantedBy=multi-user.target
 EOT
 
+cat <<EOT >/etc/systemd/system/fastchat-openai-api.service
+[Unit]
+Description=fastchat Api
+After=model_worker.service
+Requires=model_worker.service
+
+[Service]
+ExecStart=/bin/bash -c 'cd /home/ailab/fastchat && source /home/ailab/python3-venv/bin/activate && python3 -m fastchat.serve.openai_api_server --port 9019'
+User=ailab
+EnvironmentFile=/home/ailab/fastchat/env-fastchat.sh
+
+[Install]
+WantedBy=multi-user.target
+EOT
+
 # Activation et démarrage des services
 systemctl daemon-reload
-systemctl enable controller model_worker gradio_web_server
+systemctl enable controller model_worker gradio_web_server fastchat-openai-api
 pkill -9 -u ailab python3
-systemctl restart controller model_worker gradio_web_server
+systemctl restart controller model_worker gradio_web_server fastchat-openai-api
 
 echo "Installation terminée!"
 ```
