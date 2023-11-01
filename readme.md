@@ -111,7 +111,7 @@ After=model_worker.service
 Requires=model_worker.service
 
 [Service]
-ExecStart=/bin/bash -c 'cd /home/ailab/fastchat && source /home/ailab/python3-venv/bin/activate && python3 -m fastchat.serve.openai_api_server --port 9019'
+ExecStart=/bin/bash -c 'cd /home/ailab/fastchat && source /home/ailab/python3-venv/bin/activate && python3 -m fastchat.serve.openai_api_server --host 0.0.0.0'
 User=ailab
 EnvironmentFile=/home/ailab/fastchat/env-fastchat.sh
 
