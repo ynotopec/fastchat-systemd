@@ -135,7 +135,7 @@ L'utilisateur doit simplement exécuter le script avec des droits root pour inst
 Vérifiez que les services sont en cours d'exécution avec:
 
 ```bash
-systemctl status controller model_worker gradio_web_server
+systemctl status controller model_worker gradio_web_server fastchat-openai-api
 ```
 
 ## Références
