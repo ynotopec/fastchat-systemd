@@ -1,4 +1,4 @@
-# Documentation d'installation de FastChat avec HuggingFace
+# Documentation d'installation de FastChat avec HuggingFace et SystemD
 
 ## Prérequis
 
