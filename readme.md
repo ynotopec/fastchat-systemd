@@ -34,7 +34,7 @@ apt install python3-venv -y
 
 # Configuration de l'environnement utilisateur
 su - ${userName} <<'EOF'
-mkdir -p ~/fastchat/.venv
+mkdir -p ~/FastChat/.venv
 python3 -m venv ~/FastChat/.venv
 source ~/FastChat/.venv/bin/activate
 python3 -m pip install --upgrade pip
