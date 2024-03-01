@@ -12,8 +12,9 @@
 #https://github.com/lm-sys/FastChat
 
 # LLM model
-#lmsys/vicuna-33b-v1.3
-export modelPath=mistralai/Mixtral-8x7B-Instruct-v0.1
+#mistralai/Mixtral-8x7B-Instruct-v0.1
+export modelPath=lmsys/vicuna-33b-v1.3
+export load_8bit=False
 
 export modelName=$(basename "${modelPath}" |sed -rn 's#^(|[0-9]+[bB][^[:alnum:]]+)([[:alnum:]]+)([^[:alnum:]].*|)$#\2#p' |tr '[:upper:]' '[:lower:]' )
 
@@ -79,7 +80,7 @@ Requires=controller.service
 WorkingDirectory=/home/ailab/FastChat
 Environment="modelPath=${modelPath}"
 Environment="modelName=${modelName}"
-ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source .venv/bin/activate && python3 -m fastchat.serve.model_worker --load-8bit --model-names "'"\${modelName}"',gpt-4,gpt-3.5-turbo-instruct,gpt-3.5-turbo,gpt-3.5-turbo-16k,text-davinci-003,text-embedding-ada-002" --model-path '"\${modelPath}"' $(lspci | grep -iEw "VGA|NVIDIA" >/dev/null 2>&1 ||echo -n "--device cpu" ) > /tmp/model_worker.log 2>&1'
+ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source .venv/bin/activate && python3 -m fastchat.serve.model_worker $([ "${load_8bit}" == "True" ] && echo '--load-8bit' ) --model-names "'"\${modelName}"',gpt-4,gpt-3.5-turbo-instruct,gpt-3.5-turbo,gpt-3.5-turbo-16k,text-davinci-003,text-embedding-ada-002" --model-path '"\${modelPath}"' $(lspci | grep -iEw "VGA|NVIDIA" >/dev/null 2>&1 ||echo -n "--device cpu" ) > /tmp/model_worker.log 2>&1'
 TimeoutStartSec=360
 ExecStartPost=/bin/bash -c '/home/ailab/FastChat/wait-for-message.sh /tmp/model_worker.log "Uvicorn running"'
 User=ailab
