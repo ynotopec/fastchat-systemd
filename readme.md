@@ -81,7 +81,7 @@ WorkingDirectory=/home/ailab/FastChat
 Environment="modelPath=${modelPath}"
 Environment="modelName=${modelName}"
 ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source .venv/bin/activate && python3 -m fastchat.serve.model_worker $([ "${load_8bit}" == "True" ] && echo '--load-8bit' ) --model-names "'"\${modelName}"',gpt-4,gpt-3.5-turbo-instruct,gpt-3.5-turbo,gpt-3.5-turbo-16k,text-davinci-003,text-embedding-ada-002" --model-path '"\${modelPath}"' $(lspci | grep -iEw "VGA|NVIDIA" >/dev/null 2>&1 ||echo -n "--device cpu" ) > /tmp/model_worker.log 2>&1'
-TimeoutStartSec=360
+TimeoutStartSec=900
 ExecStartPost=/bin/bash -c '/home/ailab/FastChat/wait-for-message.sh /tmp/model_worker.log "Uvicorn running"'
 User=ailab
 [Install]
