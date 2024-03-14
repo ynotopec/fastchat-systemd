@@ -35,9 +35,10 @@ apt install python3-venv -y
 
 # Configuration de l'environnement utilisateur
 su - ${userName} <<'EOF'
-mkdir -p ~/FastChat/.venv
-python3 -m venv ~/FastChat/.venv
-source ~/FastChat/.venv/bin/activate
+mkdir -p ~/venv/FastChat
+python3 -m venv ~/venv/FastChat
+source ~/venv/FastChat/bin/activate
+python3 -m pip cache purge
 python3 -m pip install --upgrade pip
 python3 -m pip install --upgrade pip install "fschat[model_worker,webui]"
 python3 -m pip install --upgrade pip install fschat transformers torch accelerate sentencepiece protobuf gradio bitsandbytes scipy
@@ -64,7 +65,7 @@ Description=fastchat Controller
 After=network.target
 Requires=network.target
 [Service]
-ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source .venv/bin/activate && python3 -m fastchat.serve.controller > /tmp/controller.log 2>&1'
+ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source ~/venv/FastChat/bin/activate && python3 -m fastchat.serve.controller > /tmp/controller.log 2>&1'
 ExecStartPost=/bin/bash -c '/home/ailab/FastChat/wait-for-message.sh /tmp/controller.log "Uvicorn running"'
 User=ailab
 [Install]
@@ -80,7 +81,7 @@ Requires=controller.service
 WorkingDirectory=/home/ailab/FastChat
 Environment="modelPath=${modelPath}"
 Environment="modelName=${modelName}"
-ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source .venv/bin/activate && python3 -m fastchat.serve.model_worker $([ "${load_8bit}" == "True" ] && echo '--load-8bit' ) --model-names "'"\${modelName}"',gpt-4,gpt-3.5-turbo-instruct,gpt-3.5-turbo,gpt-3.5-turbo-16k,text-davinci-003,text-embedding-ada-002" --model-path '"\${modelPath}"' $(lspci | grep -iEw "VGA|NVIDIA" >/dev/null 2>&1 ||echo -n "--device cpu" ) > /tmp/model_worker.log 2>&1'
+ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source ~/venv/FastChat/bin/activate && python3 -m fastchat.serve.model_worker $([ "${load_8bit}" == "True" ] && echo '--load-8bit' ) --model-names "'"\${modelName}"',gpt-4,gpt-3.5-turbo-instruct,gpt-3.5-turbo,gpt-3.5-turbo-16k,text-davinci-003,text-embedding-ada-002" --model-path '"\${modelPath}"' $(lspci | grep -iEw "VGA|NVIDIA" >/dev/null 2>&1 ||echo -n "--device cpu" ) > /tmp/model_worker.log 2>&1'
 TimeoutStartSec=900
 ExecStartPost=/bin/bash -c '/home/ailab/FastChat/wait-for-message.sh /tmp/model_worker.log "Uvicorn running"'
 User=ailab
@@ -95,7 +96,7 @@ After=model_worker.service
 Requires=model_worker.service
 
 [Service]
-ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source .venv/bin/activate && python3 -m fastchat.serve.openai_api_server --host 0.0.0.0 --port 8501'
+ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source ~/venv/FastChat/bin/activate && python3 -m fastchat.serve.openai_api_server --host 0.0.0.0 --port 8501'
 User=ailab
 
 [Install]
@@ -108,7 +109,7 @@ Description=fastchat Gradio Web Server
 After=model_worker.service
 Requires=model_worker.service
 [Service]
-ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source .venv/bin/activate && python3 -m fastchat.serve.gradio_web_server --port 8502'
+ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source ~/venv/FastChat/bin/activate && python3 -m fastchat.serve.gradio_web_server --port 8502'
 User=ailab
 [Install]
 WantedBy=multi-user.target
