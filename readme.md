@@ -68,6 +68,7 @@ Requires=network.target
 ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source ~/venv/FastChat/bin/activate && python3 -m fastchat.serve.controller > /tmp/controller.log 2>&1'
 ExecStartPost=/bin/bash -c '/home/ailab/FastChat/wait-for-message.sh /tmp/controller.log "Uvicorn running"'
 User=ailab
+Restart=always
 [Install]
 WantedBy=multi-user.target
 EOT
@@ -85,6 +86,7 @@ ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source ~/venv/FastChat/bin/ac
 TimeoutStartSec=900
 ExecStartPost=/bin/bash -c '/home/ailab/FastChat/wait-for-message.sh /tmp/model_worker.log "Uvicorn running"'
 User=ailab
+Restart=always
 [Install]
 WantedBy=multi-user.target
 EOT
@@ -98,6 +100,7 @@ Requires=model_worker.service
 [Service]
 ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source ~/venv/FastChat/bin/activate && python3 -m fastchat.serve.openai_api_server --host 0.0.0.0 --port 8501'
 User=ailab
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -111,6 +114,8 @@ Requires=model_worker.service
 [Service]
 ExecStart=/bin/bash -c 'cd /home/ailab/FastChat && source ~/venv/FastChat/bin/activate && python3 -m fastchat.serve.gradio_web_server --port 8502'
 User=ailab
+Restart=always
+
 [Install]
 WantedBy=multi-user.target
 EOT
